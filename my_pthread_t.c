@@ -5,7 +5,9 @@
 //Functions 
 
 int my_pthread_create(pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg) {
-		
+	thread->STATUS = READY;
+	
+
 }
 
 int my_pthread_exit(void *value_ptr);
