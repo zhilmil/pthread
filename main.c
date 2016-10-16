@@ -1,7 +1,7 @@
 #include "my_pthread_t.h"
 
 static void* func(void * value) {
-	//do nothing
+	sadf;
 }
 int main()
 {
