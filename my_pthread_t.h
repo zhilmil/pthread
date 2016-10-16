@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <ucontext.h>
 
+#include "common.h"
 #include "scheduler.h"
+
 
 
 //status of a thread

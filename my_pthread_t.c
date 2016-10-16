@@ -13,6 +13,7 @@ queue_t P2q; //lower priority queue
 queue_t Wq; //wait queue
 
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg) {
+	my_scheduler_init();
 	//Initializing thread node
 	queueNode_t* node = createNode();
 	
@@ -34,7 +35,7 @@ void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*functi
 	long int t = (long int)time(0);
 	thread->last_start_time = t;
 	
-	printf("enqueuing generated node");
+	printf("enqueuing generated node\n");
 	enque(&P1q,node);
 
 	printf("Making context\n");
