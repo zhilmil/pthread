@@ -1,3 +1,6 @@
+#ifndef MY_PTHREAD_H
+#define MY_PTHREAD_H
+
 #include <stdio.h>
 #include <unistd.h>
 #include <ucontext.h>
@@ -11,23 +14,24 @@ typedef enum {
 	FINISHED = 4
 } STATE;
 
-typedef struct thread {
+typedef struct my_pthread_t{
 	unsigned int tid;
-	ucontext_t context;
+	ucontext_t* context;
 	long long last_start_time;
 	STATE st;
 	unsigned int priority;
 	void* stack;
 } my_pthread_t;
 
-//Functions 
-int my_pthread_create(pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg);
-
+//Functions of thread
+void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg);
 int my_pthread_exit(void *value_ptr);
-
 void my_pthread_yield();
-
 int my_pthread_join(pthread_t thread,void **value_ptr);
-
 void my_scheduler_init();
 
+//Functions of mutex
+int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);
+int my_pthread_mutex_lock(my_pthread_mutex_t *mutex);
+
+#endif
