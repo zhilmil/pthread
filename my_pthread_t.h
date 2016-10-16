@@ -31,7 +31,7 @@ int my_pthread_join(pthread_t thread,void **value_ptr);
 void my_scheduler_init();
 
 //Functions of mutex
-int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);
-int my_pthread_mutex_lock(my_pthread_mutex_t *mutex);
+/*int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);
+int my_pthread_mutex_lock(my_pthread_mutex_t *mutex);*/
 
 #endif
