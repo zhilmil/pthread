@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <ucontext.h>
 
+#include "scheduler.h"
+
 
 //status of a thread
 typedef enum {
@@ -28,7 +30,6 @@ void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*functi
 int my_pthread_exit(void *value_ptr);
 void my_pthread_yield();
 int my_pthread_join(pthread_t thread,void **value_ptr);
-void my_scheduler_init();
 
 //Functions of mutex
 /*int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);
