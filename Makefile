@@ -1,5 +1,5 @@
 OBJDIR = build
-targets = timer queue scheduler my_pthread_t
+targets = timer queue scheduler my_pthread_t context
 properTargets = $(addsuffix .o, $(addprefix $(OBJDIR)/, $(targets)))
 
 .PHONY: dirs 
@@ -16,6 +16,8 @@ queue:
 scheduler: 
 	gcc -c $@.c -o $(OBJDIR)/$@.o
 my_pthread_t: 
+	gcc -c $@.c -o $(OBJDIR)/$@.o
+context:
 	gcc -c $@.c -o $(OBJDIR)/$@.o
 clean:
 	rm -rf $(OBJDIR)

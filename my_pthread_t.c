@@ -8,18 +8,13 @@
 #include "my_pthread_t.h"
 #include "common.h"
 #include "scheduler.h"
+#include "context.h"
 
 
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg)
 {
 	populateThread(thread, makeContext(function));
 	scheduleForExecution(thread);
-}
-
-ucontext_t* makeContext(void *(*function)(void*))
-{
-	ucontext_t * newContext = (ucontext_t*)malloc(sizeof(ucontext_t));
-	makecontext(newContext,(void(*)(void))&function,0);	
 }
 
 void populateThread(my_pthread_t* thread, ucontext_t * newContext)
