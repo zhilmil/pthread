@@ -1,12 +1,21 @@
-all: scheduler pthread queue timer
-	gcc queue.o scheduler.o pthread.o timer.o demo.c -o demo
+OBJDIR = build
+targets = timer queue scheduler my_pthread_t
+properTargets = $(addsuffix .o, $(addprefix $(OBJDIR)/, $(targets)))
+
+.PHONY: dirs 
+dirs: 
+	rm -rf $(OBJDIR)
+	mkdir $(OBJDIR)
+	make all
+all: $(targets)
+	gcc $(properTargets) demo.c -o $(OBJDIR)/demo
 timer:
-	gcc -c timer.c -o timer.o
+	gcc -c $@.c -o $(OBJDIR)/$@.o
 queue:
-	gcc -c queue.c -o queue.o
-scheduler: queue timer
-	gcc -c scheduler.c -o scheduler.o
-pthread: queue scheduler timer
-	gcc -c my_pthread_t.c -o pthread.o 
+	gcc -c $@.c -o $(OBJDIR)/$@.o
+scheduler: 
+	gcc -c $@.c -o $(OBJDIR)/$@.o
+my_pthread_t: 
+	gcc -c $@.c -o $(OBJDIR)/$@.o
 clean:
-	rm -rf *.o
+	rm -rf $(OBJDIR)
