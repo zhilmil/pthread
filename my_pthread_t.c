@@ -1,9 +1,13 @@
-#include "my_pthread_t.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/time.h>
 #define STACKSIZE 64000
+
 #include "queue.h"
+#include "my_pthread_t.h"
+#include "common.h"
+#include "scheduler.h"
 
 unsigned currThreadID=0;
 //Functions 
