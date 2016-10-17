@@ -1,6 +1,7 @@
 #ifndef SCHEDULER
 #define SCHEDULER
 
-void my_scheduler_init();
+void mySchedulerInit();
+void 
 
 #endif

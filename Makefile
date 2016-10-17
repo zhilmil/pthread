@@ -4,7 +4,7 @@ properTargets = $(addsuffix .o, $(addprefix $(OBJDIR)/, $(targets)))
 
 .PHONY: dirs 
 dirs: 
-	rm -rf $(OBJDIR)
+	make clean
 	mkdir $(OBJDIR)
 	make all
 all: $(targets)

@@ -9,43 +9,32 @@
 #include "common.h"
 #include "scheduler.h"
 
-unsigned currThreadID=0;
-//Functions 
 
-queue_t P1q; //higher priority queue
-queue_t P2q; //lower priority queue
-queue_t Wq; //wait queue
+void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg)
+{
+	populateThread(thread, makeContext(function));
+	scheduleForExecution(thread);
+}
 
-void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg) {
-	my_scheduler_init();
-	//Initializing thread node
-	queueNode_t* node = createNode();
-	
-	//Initialzing thread variables
+ucontext_t* makeContext(void *(*function)(void*))
+{
+	ucontext_t * newContext = (ucontext_t*)malloc(sizeof(ucontext_t));
+	makecontext(newContext,(void(*)(void))&function,0);	
+}
+
+void populateThread(my_pthread_t* thread, ucontext_t * newContext)
+{
+	static unsigned currThreadID=0;
 	thread->st = READY;
-	ucontext_t * newcontext = (ucontext_t*)malloc(sizeof(ucontext_t));
-	thread->context = newcontext;
+	thread->context = newContext;
 	thread->context->uc_link = 0;
 	thread->stack = malloc(STACKSIZE);
 	thread->context->uc_stack.ss_sp = thread->stack;
 	thread->context->uc_stack.ss_size = STACKSIZE;
 	thread->context->uc_stack.ss_flags = 0;
-	
-	currThreadID++;
-	thread->tid = currThreadID;
+	thread->tid = ++currThreadID;
 	thread->priority = 1;
-	node->thread = thread;
-	
-	long int t = (long int)time(0);
-	thread->last_start_time = t;
-	
-	printf("enqueuing generated node\n");
-	enque(&P1q,node);
-
-	printf("Making context\n");
-	makecontext(thread->context,(void(*)(void))&function,0);
-	printf("thread created%d \n",thread->tid); 
-//	return 0;
+	thread->last_start_time = (long int)time(0);
 }
 
 int my_pthread_exit(void *value_ptr);
