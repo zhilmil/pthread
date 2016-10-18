@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <ucontext.h>
 
 #include "queue.h"
 #include "my_pthread_t.h"
@@ -15,6 +16,7 @@ void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*functi
 	printf("Asd1");
 	populateThread(thread, makeContext(function));
 	printf("Asd5");
+	
 	setcontext(thread->context);
 	
 	//scheduleForExecution(thread);

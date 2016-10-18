@@ -12,5 +12,7 @@ ucontext_t* makeContext(void *(*function)(void*))
 	newContext->uc_stack.ss_sp = malloc(STACKSIZE);
 	newContext->uc_stack.ss_size = STACKSIZE;
 	newContext->uc_stack.ss_flags = 0;
-	makecontext(newContext,(void(*)(void))function,0);
+	makecontext(newContext,(void(*)(void))&function,0);
+	getcontext(newContext);
+	return newContext;
 }

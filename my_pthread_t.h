@@ -18,7 +18,7 @@ typedef enum {
 
 typedef struct{
 	unsigned int tid;
-	ucontext_t* context;
+	const ucontext_t* context;
 	long long last_start_time;
 	STATE st;
 	unsigned int priority;
