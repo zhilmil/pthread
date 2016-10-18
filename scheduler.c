@@ -25,15 +25,16 @@ queueNode_t* currentlyExecuting = NULL;
 void timeSliceExpired ()
 {
  	printf("Timer fired\n");
- 	queueNode_t* nextNodeToExecute = deque(&P1q);
+ 	queueNode_t* nextNodeToExecute = deque(&P1q);	
  	if(nextNodeToExecute == NULL)
  	{
  		return;
  	}
- 	//enque(&P1q, currentlyExecuting);
  	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
- 	printf("%d\n", thread->tid);
- 	const ucontext_t* context = thread->context;
+ 	if(currentlyExecuting != NULL)
+ 		enque(&P1q, currentlyExecuting);
+ 	currentlyExecuting = nextNodeToExecute;
+ 	const ucontext_t* context = thread->context; 	
  	setcontext(context);
 }
 
@@ -55,9 +56,6 @@ void scheduleForExecution(my_pthread_t* thread)
 		printf("Scheduler initialized\n");
 		mySchedulerInit();
 	}
-	printf("Node scheduling started\n");
-	queueNode_t qn;
-	qn.thread = thread;
-	enque(&P1q, &qn);
-	printf("Node scheduling ended\n");	
+	queueNode_t * qn = createNode(thread);
+	enque(&P1q, qn);
 }

@@ -37,6 +37,9 @@ STATUS enque(queue_t* q, queueNode_t* node);
 queueNode_t* deque(queue_t* q);
 
 // Creates a queue node
-queueNode_t* createNode();
+queueNode_t* createNode(void* thread);
+
+// Get size of the queue
+int getSize(queue_t* q);
 
 #endif // _QUEUE_H

@@ -68,7 +68,7 @@ queueNode_t* deque(queue_t* q)
 	}
 }
 
-queueNode_t* createNode()
+queueNode_t* createNode(void* thread)
 {
 	queueNode_t* node = NULL;
 	node = (queueNode_t*)malloc(sizeof(queueNode_t));
@@ -77,7 +77,7 @@ queueNode_t* createNode()
 		return NULL;
 	node->prev = NULL;
 	node->next = NULL;
-	node->thread = NULL;
+	node->thread = thread;
 
 	// TODO: Test code
 	//node->thread = (int*)malloc(sizeof(int));
@@ -92,6 +92,11 @@ queueNode_t* createNode()
 
 	//*(int*)(node->thread) = val;
 	return node;
+}
+
+int getSize(queue_t* q)
+{
+	return q->size;
 }
 
 // TODO: Test code
