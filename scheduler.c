@@ -24,15 +24,19 @@ queueNode_t* currentlyExecuting = NULL;
 
 void timeSliceExpired ()
 {
- 	printf("Timer fired\n");
+ 	//Grab the next node to execute. Check if it is null.  
+ 	//If it is, then keep executing the one you are currently executing.
  	queueNode_t* nextNodeToExecute = deque(&P1q);	
  	if(nextNodeToExecute == NULL)
  	{
  		return;
  	}
  	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
+ 	//Check if this is the first and only node we started executing.
  	if(currentlyExecuting != NULL)
  		enque(&P1q, currentlyExecuting);
+ 	// Push the currently executing node to the queue, start executing the node
+ 	// we pulled from the queue.
  	currentlyExecuting = nextNodeToExecute;
  	const ucontext_t* context = thread->context; 	
  	setcontext(context);
@@ -56,6 +60,7 @@ void scheduleForExecution(my_pthread_t* thread)
 		printf("Scheduler initialized\n");
 		mySchedulerInit();
 	}
+	// Added a createNode function in queue.c that takes a thread and returns a queue node.
 	queueNode_t * qn = createNode(thread);
 	enque(&P1q, qn);
 }
