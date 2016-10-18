@@ -1,5 +1,5 @@
 OBJDIR = build
-targets = timer queue scheduler my_pthread_t context
+targets = timer queue scheduler my_pthread_t context 
 properTargets = $(addsuffix .o, $(addprefix $(OBJDIR)/, $(targets)))
 
 .PHONY: dirs 

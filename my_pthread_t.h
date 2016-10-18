@@ -16,7 +16,7 @@ typedef enum {
 	FINISHED = 4
 } STATE;
 
-typedef struct my_pthread_t{
+typedef struct{
 	unsigned int tid;
 	ucontext_t* context;
 	long long last_start_time;
@@ -25,11 +25,12 @@ typedef struct my_pthread_t{
 	void* stack;
 } my_pthread_t;
 
+
 //Functions of thread
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg);
 int my_pthread_exit(void *value_ptr);
 void my_pthread_yield();
-int my_pthread_join(pthread_t thread,void **value_ptr);
+int my_pthread_join(my_pthread_t thread,void **value_ptr);
 
 //Functions of mutex
 /*int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);

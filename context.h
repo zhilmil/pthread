@@ -4,6 +4,6 @@
 
 #include <ucontext.h>
 
-ucontext_t* makeContext(void *(*function)(void*))
+ucontext_t* makeContext(void *(*function)(void*));
 
 #endif
