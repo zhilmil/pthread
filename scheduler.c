@@ -10,6 +10,8 @@
 #include "common.h"
 #include "timer.h"
 #include "queue.h"
+#include "my_pthread_t.h"
+#include "threadStructure.h"
 
 
 
@@ -24,6 +26,8 @@ queueNode_t* currentlyExecuting = NULL;
 
 void timeSliceExpired ()
 {
+
+	
  	//Grab the next node to execute. Check if it is null.  
  	//If it is, then keep executing the one you are currently executing.
  	queueNode_t* nextNodeToExecute = deque(&P1q);	
@@ -31,13 +35,10 @@ void timeSliceExpired ()
  	{
  		return;
  	}
- 	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
- 	//Check if this is the first and only node we started executing.
- 	if(currentlyExecuting != NULL)
- 		enque(&P1q, currentlyExecuting);
- 	// Push the currently executing node to the queue, start executing the node
- 	// we pulled from the queue.
- 	currentlyExecuting = nextNodeToExecute;
+ 	if(currentlyExecuting!= NULL)
+		enque(&P1q, currentlyExecuting);
+	currentlyExecuting = nextNodeToExecute;
+	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
  	const ucontext_t* context = thread->context; 	
  	setcontext(context);
 }
@@ -59,8 +60,17 @@ void scheduleForExecution(my_pthread_t* thread)
 		initialized = true;
 		printf("Scheduler initialized\n");
 		mySchedulerInit();
+		//setcontext(&currentContext);
+
 	}
 	// Added a createNode function in queue.c that takes a thread and returns a queue node.
+	printf("AA\n");
 	queueNode_t * qn = createNode(thread);
 	enque(&P1q, qn);
+}
+
+void abruptEnding()
+{
+	currentlyExecuting = NULL;
+	timeSliceExpired();
 }

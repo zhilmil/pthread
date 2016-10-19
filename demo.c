@@ -9,7 +9,7 @@ void* func(void * value) {
 }
 
 void* func2(void * value) {
-	while(1)
+	//while(1)
 	printf("Thread 2\n");
 }
 
@@ -25,5 +25,8 @@ int main()
 	my_pthread_create(&t1,NULL, &func, NULL);
 	my_pthread_create(&t2,NULL, &func2, NULL);
 	my_pthread_create(&t3,NULL, &func3, NULL);
-	while(1);
+	while(1)
+	{
+		printf("Main thread\n");
+	}
 }

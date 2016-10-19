@@ -9,7 +9,7 @@
 #include "common.h"
 #include "scheduler.h"
 #include "context.h"
-
+#include "threadStructure.h"
 
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg)
 {	
@@ -18,15 +18,6 @@ void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*functi
 	scheduleForExecution(thread);
 }
 
-void populateThread(my_pthread_t* thread, ucontext_t * newContext)
-{
-	static unsigned currThreadID=0;
-	thread->st = READY;
-	thread->context = newContext;
-	thread->tid = ++currThreadID;
-	thread->priority = 1;
-	thread->last_start_time = (long int)time(0);
-}
 
 
 
