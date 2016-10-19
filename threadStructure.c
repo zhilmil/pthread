@@ -9,5 +9,6 @@ void populateThread(my_pthread_t* thread, ucontext_t * newContext)
 	thread->context = newContext;
 	thread->tid = ++currThreadID;
 	thread->priority = 1;
+	//thread->currentlyYielded = false;
 	thread->last_start_time = (long int)time(0);
 }

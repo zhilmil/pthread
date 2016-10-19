@@ -9,7 +9,10 @@ void* func(void * value) {
 }
 
 void* func2(void * value) {
-	//while(1)
+	printf("Before yield");
+	my_pthread_yield();
+	printf("After yield");
+	while(1)
 	printf("Thread 2\n");
 }
 

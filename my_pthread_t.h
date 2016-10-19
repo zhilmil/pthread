@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <ucontext.h>
 
+#include "common.h"
+
 
 
 
@@ -23,6 +25,7 @@ typedef struct{
 	STATE st;
 	unsigned int priority;
 	void* stack;
+	boolean currentlyYielded;
 } my_pthread_t;
 
 

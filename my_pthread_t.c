@@ -18,6 +18,15 @@ void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*functi
 	scheduleForExecution(thread);
 }
 
+void my_pthread_yield()
+{
+	yield();
+}
+
+int my_pthread_exit(void *value_ptr)
+{
+	abruptEnding();
+}
 
 
 
