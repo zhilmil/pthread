@@ -21,27 +21,38 @@ queue_t P1q; //higher priority queue
 queue_t P2q; //lower priority queue
 queue_t Wq; //wait queue
 
-boolean initialized = false, pauseAlarms = false;
+boolean initialized = false;
+boolean pauseAlarms = false;
 queueNode_t* currentlyExecuting = NULL;
 
 void timeSliceExpired ()
 {
-	//Ugly hack. Fix this. 
-	if(pauseAlarms == true) return;	
- 	//Grab the next node to execute. Check if it is null.  
- 	//If it is, then keep executing the one you are currently executing.
- 	queueNode_t* nextNodeToExecute = deque(&P1q);	
- 	if(nextNodeToExecute == NULL)
+	// Ugly hack to ensure we don't get interupted while switching contexts.
+	if(pauseAlarms) return;
+	// Pick the next node to execute
+	queueNode_t* nextNodeToExecute = deque(&P1q);
+	// check if the queue was empty.
+	if(nextNodeToExecute == NULL)
  	{
  		return;
  	}
- 	if(currentlyExecuting!= NULL)
+ 	// Prepare to swap out the current context
+ 	ucontext_t * currentContext;
+ 	if(currentlyExecuting != NULL)
+ 	{	
 		enque(&P1q, currentlyExecuting);
+		currentContext = ((my_pthread_t*)(currentlyExecuting->thread))->context;
+	}
+	else
+	{
+		currentContext = makeEmptyContext();
+	}
+	
 	currentlyExecuting = nextNodeToExecute;
 	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
- 	ucontext_t* context = thread->context;
- 	printf("%d\n", thread->tid);
- 	setcontext(context);
+	// Do the swaping.
+	swapcontext(currentContext, thread->context);
+ 	
 }
 
 void mySchedulerInit()
@@ -65,30 +76,21 @@ void scheduleForExecution(my_pthread_t* thread)
 
 	}
 	// Added a createNode function in queue.c that takes a thread and returns a queue node.
-	printf("AA\n");
 	queueNode_t * qn = createNode(thread);
 	enque(&P1q, qn);
 }
 
 void abruptEnding()
 {
+	// Set the currently Executing to null so that it doesn't get rescheduled.
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
+	// End the current time slice.
 	timeSliceExpired();
 }
 
 void yield()
 {
-	// Bad idea, have to figure out a way to make these instructions atomic.
-	pauseAlarms = true;
-	my_pthread_t* currentThread = (my_pthread_t *)(currentlyExecuting->thread);
-	currentThread->currentlyYielded = true;
-	getcontext(currentThread->context);
-	if(currentThread->currentlyYielded == true)
-	{
-		//printf("Thread called yield\n");
-		currentThread->currentlyYielded = false;
-		pauseAlarms = false;
-		timeSliceExpired();
-	}
+	// End the current time slice, so our thread gets swapped out.
+	timeSliceExpired();
 }

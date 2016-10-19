@@ -25,4 +25,14 @@ ucontext_t* makeContext(void *(*function)(void*))
 	return newContext;
 }
 
+ucontext_t* makeEmptyContext()
+{
+	ucontext_t * currentContext = (ucontext_t*)malloc(sizeof(ucontext_t));
+	currentContext->uc_link = 0;
+	currentContext->uc_stack.ss_sp = malloc(STACKSIZE);
+	currentContext->uc_stack.ss_size = STACKSIZE;
+	currentContext->uc_stack.ss_flags = 0;
+	return currentContext;
+}
+
 
