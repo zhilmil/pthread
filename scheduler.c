@@ -36,23 +36,43 @@ void timeSliceExpired ()
  	{
  		return;
  	}
- 	// Prepare to swap out the current context
- 	ucontext_t * currentContext;
+ 	// Prepare to swap out the current context unless, you are instructed otherwise.
+ 	ucontext_t * currentContext;	 	
  	if(currentlyExecuting != NULL)
  	{	
-		enque(&P1q, currentlyExecuting);
 		currentContext = ((my_pthread_t*)(currentlyExecuting->thread))->context;
+		
 	}
 	else
 	{
 		currentContext = makeEmptyContext();
+		my_pthread_t* currentThread = (my_pthread_t *)malloc(sizeof(my_pthread_t));
+		populateThread(currentThread, currentContext);
+		currentlyExecuting = createNode(currentThread);
+		//getcontext(currentContext);
 	}
-	
+	enque(&P1q, currentlyExecuting);
 	currentlyExecuting = nextNodeToExecute;
 	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
 	// Do the swaping.
 	swapcontext(currentContext, thread->context);
- 	
+}
+
+void loadNewThread()
+{
+
+	queueNode_t* nextNodeToExecute = deque(&P1q);
+	// check if the queue was empty.
+	if(nextNodeToExecute == NULL)
+ 	{
+ 		return;
+ 	}
+ 	// Make an empty context.
+ 	ucontext_t * currentContext = makeEmptyContext();
+ 	currentlyExecuting = nextNodeToExecute;
+	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
+	// Do the swaping.
+	swapcontext(currentContext, thread->context);
 }
 
 void mySchedulerInit()
@@ -73,7 +93,6 @@ void scheduleForExecution(my_pthread_t* thread)
 		printf("Scheduler initialized\n");
 		mySchedulerInit();
 		//setcontext(&currentContext);
-
 	}
 	// Added a createNode function in queue.c that takes a thread and returns a queue node.
 	queueNode_t * qn = createNode(thread);
@@ -82,11 +101,12 @@ void scheduleForExecution(my_pthread_t* thread)
 
 void abruptEnding()
 {
-	// Set the currently Executing to null so that it doesn't get rescheduled.
+	// Set the currently Executing to null so that it doesn't get rescheduled ever.
+	// loadNewThread from the queue and start executing it.
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
 	// End the current time slice.
-	timeSliceExpired();
+	loadNewThread();
 }
 
 void yield()
