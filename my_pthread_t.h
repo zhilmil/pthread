@@ -32,13 +32,12 @@ typedef struct{
 	STATE st;
 	unsigned int priority;
 	void* stack;
-	boolean currentlyYielded;
 } my_pthread_t;
 
 
 //Functions of thread
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg);
-int my_pthread_exit(void *value_ptr);
+int my_pthread_exit( void *value_ptr);
 void my_pthread_yield();
 int my_pthread_join(my_pthread_t thread,void **value_ptr);
 
