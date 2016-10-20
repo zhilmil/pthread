@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <ucontext.h>
-
 #include "queue.h"
 #include "my_pthread_t.h"
 #include "common.h"
@@ -28,6 +27,51 @@ int my_pthread_exit(void *value_ptr)
 	abruptEnding();
 }
 
+int my_pthread_mutex_init(my_pthread_mutex_t* mutex,const my_pthread_mutexattr_t* mutex_attr)
+{
+	mutex = malloc(sizeof(my_pthread_mutex_t));
+	mutex->mutex = 0; //initialized
+	mutex->mutexattr_t = mutex_attr; //making mutex attributes to be the attributes passed
+	return 1;
+}
 
+int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
+{
+	int mutexLocked = -1;	
+	while(mutexLocked==-1)
+	{
+		mutexLocked = __sync_lock_test_and_set(&(mutex->mutex),0);
+		if(mutexLocked == -1)
+		{
+			//mutex is not initialized
+			return -1;
+		}
+		 if(mutexLocked==1)
+		{
+			break; //mutex received	
+		}
+		//TODO : change  status change to waiting
+		yield();
+	}
+	//change status to running
+	return 1;
+}
 
+int my_pthread_mutex_unlock(my_pthread_mutex_t * mutex)
+{
+	__sync_lock_test_and_set(&(mutex->mutex),1);
+}
 
+int my_pthread_mutex_destroy(my_pthread_mutex_t * mutex)
+{
+	int mutexFree = -1;
+	mutexFree = __sync_lock_test_and_set(&(mutex->mutex),0);
+	if(mutexFree==-1)
+	{
+		//mutex cannot be freed as it is being used
+		return -1;
+	}
+	else {
+		free(&mutex);
+	}
+}

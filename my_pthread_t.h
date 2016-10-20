@@ -7,8 +7,15 @@
 
 #include "common.h"
 
+typedef struct {
+	int attr;
+} my_pthread_mutexattr_t;
 
-
+//mutex
+typedef struct {
+	int mutex;
+	my_pthread_mutexattr_t* mutexattr_t;
+} my_pthread_mutex_t;
 
 //status of a thread
 typedef enum {
@@ -36,7 +43,9 @@ void my_pthread_yield();
 int my_pthread_join(my_pthread_t thread,void **value_ptr);
 
 //Functions of mutex
-/*int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const pthread_mutexattr_t *mutexattr);
-int my_pthread_mutex_lock(my_pthread_mutex_t *mutex);*/
+int my_pthread_mutex_init(my_pthread_mutex_t* mutex, const my_pthread_mutexattr_t* mutexattr);
+int my_pthread_mutex_lock(my_pthread_mutex_t *mutex);
+int my_pthread_mutex_unlock(my_pthread_mutex_t *mutex);
+int my_pthread_mutex_destroy(my_pthread_mutex_t *mutex);
 
 #endif
