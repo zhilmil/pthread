@@ -103,6 +103,10 @@ void abruptEnding()
 {
 	// Set the currently Executing to null so that it doesn't get rescheduled ever.
 	// loadNewThread from the queue and start executing it.
+	
+// Zhilmil added status change
+	my_pthread_t* threadCurr = currentlyExecuting->thread;
+	threadCurr->st = FINISHED;
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
 	// End the current time slice.
@@ -113,4 +117,15 @@ void yield()
 {
 	// End the current time slice, so our thread gets swapped out.
 	timeSliceExpired();
+}
+
+void statusChange(STATE newState)
+{
+	printf("status change was called for %d",newState);
+	my_pthread_t* threadCurr = currentlyExecuting->thread;
+	if(threadCurr!=NULL)
+		{
+	//		my_pthread_t* threadCurr = currentlyExecuting->thread;
+			threadCurr->st = newState;
+		}	
 }

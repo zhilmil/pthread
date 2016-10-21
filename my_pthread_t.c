@@ -27,10 +27,24 @@ int my_pthread_exit(void *value_ptr)
 	abruptEnding();
 }
 
+int my_pthread_join(my_pthread_t thread, void ** value_ptr)
+{
+	printf("the join has started");
+	printf("%d",thread.st);
+	//target thread
+	while(thread.st!=4)
+	{		
+		printf("calling thread  is waiting for inner to execute");
+	//	statusChange(WAITING);
+		yield();
+	}	
+	return 0;
+}
+
 int my_pthread_mutex_init(my_pthread_mutex_t* mutex,const my_pthread_mutexattr_t* mutex_attr)
 {
 	mutex = malloc(sizeof(my_pthread_mutex_t));
-	mutex->mutex = 0; //initialized
+	mutex->mutex = 1; //initialized
 	mutex->mutexattr_t = mutex_attr; //making mutex attributes to be the attributes passed
 	return 1;
 }
@@ -50,10 +64,10 @@ int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 		{
 			break; //mutex received	
 		}
-		//TODO : change  status change to waiting
+		statusChange(WAITING);
 		yield();
 	}
-	//change status to running
+	statusChange(RUNNING);
 	return 1;
 }
 
