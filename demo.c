@@ -26,13 +26,12 @@ my_pthread_mutex_t mut;
 void* func4(void * value)
 {
 
-	printf("Before entering critical section\n");
+	printf("Before entering critical section thread 4\n");
 	int i = 0;
 	my_pthread_mutex_lock(&mut);
 	while(i<50)
 	{
 		printf("Critical zone! Thread 4\n");
-		i++;
 	}
 	my_pthread_mutex_unlock(&mut);
 
@@ -42,13 +41,12 @@ void* func5(void * value)
 {
 
 	
-	printf("Before entering critical section\n");
+	printf("Before entering critical section thread 5\n");
 	int i = 0;
 	my_pthread_mutex_lock(&mut);
 	while(i<50)
 	{
 		printf("Critical zone! Thread 5\n");
-		i++;
 	}
 	my_pthread_mutex_unlock(&mut);
 
