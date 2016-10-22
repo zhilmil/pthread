@@ -1,11 +1,21 @@
 #include "queue.h"
-
+#include "my_pthread_t.h"
 // Initialize
 void initQueue(queue_t* q)
 {
 	q->size = 0;
 	q->head = NULL;
 	q->tail = NULL;
+}
+
+my_pthread_t* getThread(queueNode_t* input)
+{
+	return (my_pthread_t*)input->thread;
+}
+
+void setThread(queueNode_t* input, my_pthread_t* thread)
+{
+	input->thread = thread;
 }
 
 

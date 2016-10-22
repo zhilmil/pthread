@@ -2,6 +2,7 @@
 #define _QUEUE_H
 
 #include <stdlib.h>
+#include "my_pthread_t.h"
 
 // RETURN STATUS of APIs
 typedef enum {
@@ -41,5 +42,9 @@ queueNode_t* createNode(void* thread);
 
 // Get size of the queue
 int getSize(queue_t* q);
+
+my_pthread_t* getThread(queueNode_t* input);
+
+void setThread(queueNode_t* input, my_pthread_t*);
 
 #endif // _QUEUE_H

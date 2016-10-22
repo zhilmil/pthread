@@ -9,16 +9,16 @@
 #include "scheduler.h"
 #include "common.h"
 #include "timer.h"
-#include "queue.h"
+#include "multiLevelQueue.h"
 #include "my_pthread_t.h"
 #include "threadStructure.h"
+#include "queue.h"
 
 
 
 //Functions 
 
-queue_t P1q; //higher priority queue
-queue_t P2q; //lower priority queue
+
 queue_t Wq; //wait queue
 
 boolean initialized = false;
@@ -30,7 +30,7 @@ void timeSliceExpired ()
 	// Ugly hack to ensure we don't get interupted while switching contexts.
 	if(pauseAlarms) return;
 	// Pick the next node to execute
-	queueNode_t* nextNodeToExecute = deque(&P1q);
+	queueNode_t* nextNodeToExecute = mDeque();
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
@@ -40,7 +40,9 @@ void timeSliceExpired ()
  	ucontext_t * currentContext;	 	
  	if(currentlyExecuting != NULL)
  	{	
-		currentContext = ((my_pthread_t*)(currentlyExecuting->thread))->context;
+ 		my_pthread_t* thread = getThread(currentlyExecuting);
+		currentContext = thread->context;
+		decrementPriority(thread);
 		
 	}
 	else
@@ -51,9 +53,10 @@ void timeSliceExpired ()
 		currentlyExecuting = createNode(currentThread);
 		//getcontext(currentContext);
 	}
-	enque(&P1q, currentlyExecuting);
-	currentlyExecuting = nextNodeToExecute;
-	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
+	mEnque(currentlyExecuting);
+	currentlyExecuting = nextNodeToExecute;	
+	my_pthread_t* thread = getThread(nextNodeToExecute);
+	setStatus(thread, RUNNING);
 	// Do the swaping.
 	swapcontext(currentContext, thread->context);
 }
@@ -61,7 +64,7 @@ void timeSliceExpired ()
 void loadNewThread()
 {
 
-	queueNode_t* nextNodeToExecute = deque(&P1q);
+	queueNode_t* nextNodeToExecute = mDeque();
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
@@ -70,7 +73,7 @@ void loadNewThread()
  	// Make an empty context.
  	ucontext_t * currentContext = makeEmptyContext();
  	currentlyExecuting = nextNodeToExecute;
-	my_pthread_t* thread = (my_pthread_t *)(nextNodeToExecute->thread);
+	my_pthread_t* thread = getThread(currentlyExecuting);
 	// Do the swaping.
 	swapcontext(currentContext, thread->context);
 }
@@ -78,8 +81,7 @@ void loadNewThread()
 void mySchedulerInit()
 {	
 	setTimer(&timeSliceExpired, 50);
-	// As of for now, only working with high priority queue.
-	initQueue(&P1q);
+	initMQ();
 }
 
 void scheduleForExecution(my_pthread_t* thread)
@@ -96,7 +98,7 @@ void scheduleForExecution(my_pthread_t* thread)
 	}
 	// Added a createNode function in queue.c that takes a thread and returns a queue node.
 	queueNode_t * qn = createNode(thread);
-	enque(&P1q, qn);
+	mEnque(qn);
 }
 
 void abruptEnding()
@@ -105,8 +107,8 @@ void abruptEnding()
 	// loadNewThread from the queue and start executing it.
 	
 // Zhilmil added status change
-	my_pthread_t* threadCurr = currentlyExecuting->thread;
-	threadCurr->st = FINISHED;
+	
+	setStatus(getThread(currentlyExecuting), FINISHED);
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
 	// End the current time slice.
@@ -116,16 +118,9 @@ void abruptEnding()
 void yield()
 {
 	// End the current time slice, so our thread gets swapped out.
+	setStatus(getThread(currentlyExecuting), WAITING);
 	timeSliceExpired();
 }
 
-void statusChange(STATE newState)
-{
-	printf("status change was called for %d",newState);
-	my_pthread_t* threadCurr = currentlyExecuting->thread;
-	if(threadCurr!=NULL)
-		{
-	//		my_pthread_t* threadCurr = currentlyExecuting->thread;
-			threadCurr->st = newState;
-		}	
-}
+
+

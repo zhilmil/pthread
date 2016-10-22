@@ -34,7 +34,7 @@ int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 	//target thread
 	while(thread.st!=4)
 	{		
-		printf("calling thread  is waiting for inner to execute");
+	//	printf("calling thread  is waiting for inner to execute");
 	//	statusChange(WAITING);
 		yield();
 	}	
@@ -64,10 +64,9 @@ int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 		{
 			break; //mutex received	
 		}
-		statusChange(WAITING);
+		
 		yield();
 	}
-	statusChange(RUNNING);
 	return 1;
 }
 
