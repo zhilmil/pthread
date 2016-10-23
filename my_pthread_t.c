@@ -11,8 +11,8 @@
 #include "threadStructure.h"
 
 void my_pthread_create(my_pthread_t* thread, pthread_attr_t* attr,void *(*function)(void*),void* arg)
-{	
-	populateThread(thread, makeContext(function));
+{
+	populateThread(thread, makeContext(function, arg));
 	
 	scheduleForExecution(thread);
 }

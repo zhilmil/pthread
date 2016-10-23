@@ -6,13 +6,13 @@
 #include "scheduler.h"
 #define STACKSIZE 64000
 
-void * wrapper(void *(*function)(void*))
+void * wrapper(void *(*function)(void*), void* arg)
 {
-	function(NULL);
+	function(arg);
 	abruptEnding();
 }
 
-ucontext_t* makeContext(void *(*function)(void*))
+ucontext_t* makeContext(void *(*function)(void*), void* arg)
 {
 	ucontext_t * newContext = (ucontext_t*)malloc(sizeof(ucontext_t));
 	newContext->uc_link = 0;
@@ -20,7 +20,7 @@ ucontext_t* makeContext(void *(*function)(void*))
 	newContext->uc_stack.ss_size = STACKSIZE;
 	newContext->uc_stack.ss_flags = 0;
 	getcontext(newContext);
-	makecontext(newContext, (void(*)(void))wrapper, 1, function);
+	makecontext(newContext, (void(*)(void*))wrapper, 2, function, arg);
 	//getcontext(newContext);
 	return newContext;
 }
