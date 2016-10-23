@@ -24,6 +24,7 @@ queue_t Wq; //wait queue
 boolean initialized = false;
 boolean pauseAlarms = false;
 queueNode_t* currentlyExecuting = NULL;
+boolean abnormalEnding = false;
 
 void timeSliceExpired ()
 {
@@ -50,7 +51,10 @@ void timeSliceExpired ()
  	{	
  		my_pthread_t* thread = getThread(currentlyExecuting);
 		currentContext = thread->context;
-		decrementPriority(thread);
+		if(!abnormalEnding)
+		{
+			decrementPriority(thread);
+		}
 		
 	}
 	else
@@ -66,6 +70,7 @@ void timeSliceExpired ()
 	my_pthread_t* thread = getThread(nextNodeToExecute);
 	setStatus(thread, RUNNING);
 	// Do the swaping.
+	abnormalEnding = false;
 	swapcontext(currentContext, thread->context);
 }
 
@@ -127,6 +132,7 @@ void yield()
 {
 	// End the current time slice, so our thread gets swapped out.
 	setStatus(getThread(currentlyExecuting), WAITING);
+	abnormalEnding = true;
 	timeSliceExpired();
 }
 
