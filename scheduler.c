@@ -27,6 +27,14 @@ queueNode_t* currentlyExecuting = NULL;
 
 void timeSliceExpired ()
 {
+	//Some sort of a crappy issue with timers. Only the last set one is firing.
+	static int counter = 0;
+	counter = (++counter)%3;
+	if(counter == 2)
+	{
+		maintainenceCycle();
+	}
+	//printf("Scheduler ran\n");
 	// Ugly hack to ensure we don't get interupted while switching contexts.
 	if(pauseAlarms) return;
 	// Pick the next node to execute

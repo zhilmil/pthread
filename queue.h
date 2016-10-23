@@ -25,6 +25,12 @@ typedef struct queue {
 	unsigned int size;
 } queue_t;
 
+typedef struct queueIterator
+{
+	queueNode_t* current;
+	queue_t* queue;
+} queueIterator_t;
+
 
 // Initializes queue
 void initQueue(queue_t* q);
@@ -47,4 +53,9 @@ my_pthread_t* getThread(queueNode_t* input);
 
 void setThread(queueNode_t* input, my_pthread_t*);
 
+queueIterator_t* getIterator(queue_t* q);
+
+queueNode_t* getNextNode(queueIterator_t* qi);
+
+void removeNode(queueIterator_t* qi, queueNode_t* node);
 #endif // _QUEUE_H

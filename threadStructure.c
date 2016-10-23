@@ -44,3 +44,8 @@ int getPriority(my_pthread_t* thread)
 	return thread->priority;
 }
 
+void setPriority(my_pthread_t* thread, int priority)
+{
+	thread->priority = priority;
+}
+

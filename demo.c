@@ -94,6 +94,6 @@ int main()
 	my_pthread_join(t6,NULL);*/
 	while(1)
 	{
-		//printf("Main thread\n");
+		printf("Main thread\n");
 	}
 }

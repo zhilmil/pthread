@@ -6,4 +6,5 @@
 void mEnque(queueNode_t* input);
 queueNode_t* mDeque();
 void initMQ();
+void maintainenceCycle();
 #endif

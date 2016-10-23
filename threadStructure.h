@@ -12,5 +12,6 @@ STATE getStatus(my_pthread_t* thread);
 int getPriority(my_pthread_t* thread);
 void incrementPriority(my_pthread_t* thread);
 void decrementPriority(my_pthread_t* thread);
+void setPriority(my_pthread_t* thread, int priority);
 
 #endif

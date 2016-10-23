@@ -109,6 +109,42 @@ int getSize(queue_t* q)
 	return q->size;
 }
 
+queueIterator_t* getIterator(queue_t* q)
+{
+	queueIterator_t* qi = (queueIterator_t*)malloc(sizeof(queueIterator_t));
+	qi->current = q->head;
+	qi->queue = q;
+	return qi;
+}
+
+queueNode_t* getNextNode(queueIterator_t* qi)
+{
+	if(qi->current != NULL)
+	{
+		qi->current = qi->current->next;
+	}
+	return qi->current;
+}
+
+void removeNode(queueIterator_t* qi, queueNode_t* node)
+{
+	if(qi->queue->head == node)
+	{
+		initQueue(qi->queue);
+	}
+	else if(qi->queue->tail == node)
+	{
+		qi->queue->tail = node->prev;
+		qi->queue->tail->next = NULL;
+		qi->queue->size--;
+	}
+	else
+	{
+		node->prev->next = node->next;
+		qi->queue->size--;
+	}
+}
+
 // TODO: Test code
 /*
 void printListFromHead(queue_t* q)
