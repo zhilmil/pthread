@@ -28,34 +28,15 @@ queueNode_t* mDeque(int failMeNot)
 	stepCounter = (++stepCounter)%4;
 	if(stepCounter == 0 || stepCounter == 1)
 	{		
-		//printf("queue 1 used for deque\n");
-		if(getSize(&P1q) != 0)
-		{
-			return deque(&P1q);
-		}
-		else if(getSize(&P2q) != 0)
-		{
-			return deque(&P2q);
-		}
-		else
-		{
-			return NULL;
-		}
+		return deque(&P1q);
+		
 	}
 	else if(stepCounter == 2 || failMeNot >= 1)
 	{
 		if(getSize(&P2q) != 0)
-		{
 			return deque(&P2q);
-		}
-		else if(getSize(&P1q) != 0)
-		{
-			return deque(&P1q);
-		}
 		else
-		{
-			return NULL;
-		}
+			return deque(&P1q);
 	}
 	else
 	{
@@ -95,6 +76,7 @@ int exists(int tid)
 		{
 			return 1;
 		}
+		qn = getNextNode(qi);
 	}
 
 	queueIterator_t* qi2 = getIterator(&P2q);
@@ -106,6 +88,7 @@ int exists(int tid)
 		{
 			return 1;
 		}
+		qn = getNextNode(qi);
 	}
 
 	return 0;

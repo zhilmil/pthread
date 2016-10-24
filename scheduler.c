@@ -25,6 +25,7 @@ boolean initialized = false;
 boolean pauseAlarms = false;
 queueNode_t* currentlyExecuting = NULL;
 boolean abnormalEnding = false;
+boolean yielded = false;
 
 void timeSliceExpired ()
 {
@@ -39,7 +40,11 @@ void timeSliceExpired ()
 	// Ugly hack to ensure we don't get interupted while switching contexts.
 	if(pauseAlarms) return;
 	// Pick the next node to execute
-	queueNode_t* nextNodeToExecute = mDeque(0);
+	queueNode_t* nextNodeToExecute;
+	if(!yielded)
+		nextNodeToExecute = mDeque(0);
+	else
+		nextNodeToExecute = mDeque(1);	
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
@@ -72,6 +77,7 @@ void timeSliceExpired ()
 	setStatus(thread, RUNNING);
 	// Do the swaping.
 	abnormalEnding = false;
+	yielded = false;
 	swapcontext(currentContext, thread->context);
 }
 
@@ -124,7 +130,7 @@ void abruptEnding(void* output)
 	//printf("OLO%d %d\n", ((my_pthread_t*)currentlyExecuting->thread)->tid, ((my_pthread_t*)currentlyExecuting->thread)->last_start_time);
 	if(output != NULL)
 		getThread(currentlyExecuting)->retval = output;
-	((my_pthread_t*)currentlyExecuting->thread)->st = FINISHED;
+	//(my_pthread_t*)currentlyExecuting->thread)->st = FINISHED;
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
 
@@ -138,6 +144,7 @@ void yield()
 	/*if(currentlyExecuting != NULL)
 		setStatus(getThread(currentlyExecuting), WAITING);*/
 	abnormalEnding = true;
+	yielded = true;
 	timeSliceExpired();
 }
 

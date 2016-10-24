@@ -75,7 +75,7 @@ void* func7(void *value)
 	while(i<50)
 	{
 		i++;
-		printf("In function 7\n");
+		//printf("In function 7");
 	}
 	int a = 10;
 	
@@ -90,16 +90,16 @@ int main()
 	my_pthread_create(&t2,NULL, &func2, NULL);
 	my_pthread_create(&t3,NULL, &func3, NULL);
 	
-	my_pthread_create(&t5, NULL, &func5, NULL);
-	my_pthread_create(&t4, NULL, &func4, NULL);
-	my_pthread_create(&t6,NULL,&func6,NULL);
+/*	my_pthread_create(&t5, NULL, &func5, NULL);
+	my_pthread_create(&t4, NULL, &func4, NULL);*/
+	/*my_pthread_create(&t6,NULL,&func6,NULL);
 	my_pthread_create(&t7,NULL,&func7,NULL);
-	printf("status %d",t7.st);
+	*//*printf("status %d",t7.st);
 	printf("status %d",t6.st);
-	
+	*/
 	int a = 10;
-	my_pthread_join(t7, (void**)&a);
-	printf("Hello World\n");
+	//my_pthread_join(t7, (void**)&a);
+	printf("YUHU!");
 	while(1)
 	{
 		printf("Main Thread\n");

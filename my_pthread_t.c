@@ -32,19 +32,19 @@ int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 {
 
 	printf("the join has started");
-	printf("%d\n",getStatus(&thread));
+	//printf("%d\n", getStatus(&thread));
 	//target thread
+	
 	while(exists(thread.tid))
 	{
-
 			//printf("calling thread  is waiting for inner to execute%d\n", getStatus(&thread));
 	//	statusChange(WAITING);
 
 		yield();
 	}
 	//
-	value_ptr = &(thread.retval);
-	printf("\n%d return value\n", (int)thread.retval);
+	//value_ptr = &(thread.retval);
+	printf("Join ended");
 	return 0;
 }
 
