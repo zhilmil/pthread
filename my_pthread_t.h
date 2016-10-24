@@ -32,6 +32,7 @@ typedef struct{
 	STATE st;
 	unsigned int priority;
 	void* stack;
+	void* retval;
 } my_pthread_t;
 
 

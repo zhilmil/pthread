@@ -8,8 +8,8 @@
 
 void * wrapper(void *(*function)(void*), void* arg)
 {
-	function(arg);
-	abruptEnding();
+	void* returnValue = function(arg);
+	abruptEnding(returnValue);
 }
 
 ucontext_t* makeContext(void *(*function)(void*), void* arg)

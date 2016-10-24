@@ -24,20 +24,25 @@ void my_pthread_yield()
 
 int my_pthread_exit(void *value_ptr)
 {
-	abruptEnding();
+	abruptEnding(value_ptr);
 }
 
 int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 {
 	printf("the join has started");
-	printf("%d",thread.st);
+	printf("%d\n",getStatus(&thread));
+	
 	//target thread
-	while(thread.st!=4)
-	{		
-	//	printf("calling thread  is waiting for inner to execute");
+	while(getStatus(&thread)!=FINISHED)
+	{
+			printf("calling thread  is waiting for inner to execute%d\n", getStatus(&thread));
 	//	statusChange(WAITING);
+
 		yield();
-	}	
+	}
+	//
+/*	value_ptr = &(thread.retval);
+	printf("\n%d return value\n", (int)thread.retval);	*/
 	return 0;
 }
 

@@ -39,7 +39,7 @@ void timeSliceExpired ()
 	// Ugly hack to ensure we don't get interupted while switching contexts.
 	if(pauseAlarms) return;
 	// Pick the next node to execute
-	queueNode_t* nextNodeToExecute = mDeque();
+	queueNode_t* nextNodeToExecute = mDeque(0);
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
@@ -62,12 +62,13 @@ void timeSliceExpired ()
 		currentContext = makeEmptyContext();
 		my_pthread_t* currentThread = (my_pthread_t *)malloc(sizeof(my_pthread_t));
 		populateThread(currentThread, currentContext);
-		currentlyExecuting = createNode(currentThread);
+		currentlyExecuting = createNode(currentThread);		
 		//getcontext(currentContext);
 	}
 	mEnque(currentlyExecuting);
 	currentlyExecuting = nextNodeToExecute;	
 	my_pthread_t* thread = getThread(nextNodeToExecute);
+
 	setStatus(thread, RUNNING);
 	// Do the swaping.
 	abnormalEnding = false;
@@ -77,7 +78,7 @@ void timeSliceExpired ()
 void loadNewThread()
 {
 
-	queueNode_t* nextNodeToExecute = mDeque();
+	queueNode_t* nextNodeToExecute = mDeque(1);
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
@@ -114,16 +115,18 @@ void scheduleForExecution(my_pthread_t* thread)
 	mEnque(qn);
 }
 
-void abruptEnding()
+void abruptEnding(void* output)
 {
 	// Set the currently Executing to null so that it doesn't get rescheduled ever.
 	// loadNewThread from the queue and start executing it.
 	
 // Zhilmil added status change
-	
-	setStatus(getThread(currentlyExecuting), FINISHED);
+	if(output != NULL)
+		getThread(currentlyExecuting)->retval = output;
+	((my_pthread_t*)currentlyExecuting->thread)->st = FINISHED;
 	currentlyExecuting = NULL;
 	pauseAlarms = false;
+
 	// End the current time slice.
 	loadNewThread();
 }
@@ -131,7 +134,8 @@ void abruptEnding()
 void yield()
 {
 	// End the current time slice, so our thread gets swapped out.
-	setStatus(getThread(currentlyExecuting), WAITING);
+	if(currentlyExecuting != NULL)
+		setStatus(getThread(currentlyExecuting), WAITING);
 	abnormalEnding = true;
 	timeSliceExpired();
 }
