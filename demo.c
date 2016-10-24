@@ -78,6 +78,7 @@ void* func7(void *value)
 		printf("In function 7\n");
 	}
 	int a = 10;
+	my_pthread_exit(&a);
 	
 }
 
@@ -97,9 +98,9 @@ int main()
 	printf("status %d",t7.st);
 	printf("status %d",t6.st);
 	
-	int a = 10;
-	my_pthread_join(t7, (void**)&a);
-	printf("Hello World\n");
+	int **a;
+	my_pthread_join(t7, (void**)a);
+	printf("Hello World%d\n", a);
 	while(1)
 	{
 		printf("Main Thread\n");
