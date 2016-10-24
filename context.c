@@ -9,6 +9,7 @@
 void * wrapper(void *(*function)(void*), void* arg)
 {
 	void* returnValue = function(arg);
+	printf("\n%d returan value\n", *((int *)returnValue));
 	abruptEnding(returnValue);
 }
 

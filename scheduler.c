@@ -68,7 +68,7 @@ void timeSliceExpired ()
 	mEnque(currentlyExecuting);
 	currentlyExecuting = nextNodeToExecute;	
 	my_pthread_t* thread = getThread(nextNodeToExecute);
-
+	
 	setStatus(thread, RUNNING);
 	// Do the swaping.
 	abnormalEnding = false;
@@ -121,6 +121,7 @@ void abruptEnding(void* output)
 	// loadNewThread from the queue and start executing it.
 	
 // Zhilmil added status change
+	//printf("OLO%d %d\n", ((my_pthread_t*)currentlyExecuting->thread)->tid, ((my_pthread_t*)currentlyExecuting->thread)->last_start_time);
 	if(output != NULL)
 		getThread(currentlyExecuting)->retval = output;
 	((my_pthread_t*)currentlyExecuting->thread)->st = FINISHED;
@@ -134,8 +135,8 @@ void abruptEnding(void* output)
 void yield()
 {
 	// End the current time slice, so our thread gets swapped out.
-	if(currentlyExecuting != NULL)
-		setStatus(getThread(currentlyExecuting), WAITING);
+	/*if(currentlyExecuting != NULL)
+		setStatus(getThread(currentlyExecuting), WAITING);*/
 	abnormalEnding = true;
 	timeSliceExpired();
 }

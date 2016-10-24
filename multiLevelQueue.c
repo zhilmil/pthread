@@ -84,6 +84,33 @@ void maintainenceCycle()
 	}
 }
 
+int exists(int tid)
+{
+	queueIterator_t* qi = getIterator(&P1q);
+	queueNode_t* qn = getNextNode(qi);
+	while(qn != NULL)
+	{
+		my_pthread_t* thread = getThread(qn);
+		if(thread->tid == tid)
+		{
+			return 1;
+		}
+	}
+
+	queueIterator_t* qi2 = getIterator(&P2q);
+	queueNode_t* qn2 = getNextNode(qi2);
+	while(qn != NULL)
+	{
+		my_pthread_t* thread = getThread(qn2);
+		if(thread->tid == tid)
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 void initMQ()
 {
 	initQueue(&P1q);

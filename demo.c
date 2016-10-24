@@ -64,6 +64,7 @@ void* func6(void *value)
 		i++;
 		printf("In function 6");
 	}
+	printf("Finished end of 7\n");
 
 }
 
@@ -73,8 +74,10 @@ void* func7(void *value)
 	while(i<50)
 	{
 		i++;
-		printf("In function 7");
+		//printf("In function 7");
 	}
+	int a = 10;
+	
 }
 
 int main()
@@ -88,17 +91,18 @@ int main()
 	
 /*	my_pthread_create(&t5, NULL, &func5, NULL);
 	my_pthread_create(&t4, NULL, &func4, NULL);*/
-	my_pthread_create(&t6,NULL,&func6,NULL);
+	//my_pthread_create(&t6,NULL,&func6,NULL);
 	my_pthread_create(&t7,NULL,&func7,NULL);
 	printf("status %d",t7.st);
 	printf("status %d",t6.st);
+	
 	int a;
-	my_pthread_join(t7, NULL);
+	my_pthread_join(t7, (void**)&a);
 	//my_pthread_join(t6, (void**)&a);
 	printf("%d Knick knack\n", a);
 	while(1)
 	{
-		printf("Asd");
+		//printf("Asd");
 		//printf("Main thread%d\n", getStatus(&t7));
 	}
 }

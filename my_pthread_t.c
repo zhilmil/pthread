@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <ucontext.h>
 #include "queue.h"
+#include "multiLevelQueue.h"
 #include "my_pthread_t.h"
 #include "common.h"
 #include "scheduler.h"
@@ -29,20 +30,21 @@ int my_pthread_exit(void *value_ptr)
 
 int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 {
+
 	printf("the join has started");
 	printf("%d\n",getStatus(&thread));
-	
 	//target thread
-	while(getStatus(&thread)!=FINISHED)
+	while(exists(thread.tid))
 	{
-			printf("calling thread  is waiting for inner to execute%d\n", getStatus(&thread));
+
+			//printf("calling thread  is waiting for inner to execute%d\n", getStatus(&thread));
 	//	statusChange(WAITING);
 
 		yield();
 	}
 	//
-/*	value_ptr = &(thread.retval);
-	printf("\n%d return value\n", (int)thread.retval);	*/
+	value_ptr = &(thread.retval);
+	printf("\n%d return value\n", (int)thread.retval);
 	return 0;
 }
 
