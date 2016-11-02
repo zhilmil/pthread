@@ -61,7 +61,7 @@ int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 	int mutexLocked = -1;	
 	while(mutexLocked==-1)
 	{
-		mutexLocked = __sync_lock_test_and_set(&(mutex->mutex),0);
+		mutexLocked = __sync_lock_test_and_set(&(mutex->mutex),1);
 		if(mutexLocked == -1)
 		{
 			//mutex is not initialized
