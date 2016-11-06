@@ -14,7 +14,7 @@ typedef struct {
 //mutex
 typedef struct {
 	int mutex;
-	my_pthread_mutexattr_t* mutexattr_t;
+	const my_pthread_mutexattr_t* mutexattr_t;
 } my_pthread_mutex_t;
 
 //status of a thread
@@ -27,7 +27,7 @@ typedef enum {
 
 typedef struct{
 	unsigned int tid;
-	const ucontext_t* context;
+	ucontext_t* context;
 	long long last_start_time;
 	STATE st;
 	unsigned int priority;

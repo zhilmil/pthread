@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <ucontext.h>
+#include <stdlib.h>
 
 #include "context.h"
 #include "scheduler.h"

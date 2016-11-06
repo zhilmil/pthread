@@ -1,4 +1,6 @@
 #include <ucontext.h>
+#include <time.h>
+#include <stdlib.h>
 #include "my_pthread_t.h"
 
 int currThreadID = 0;
