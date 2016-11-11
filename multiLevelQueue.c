@@ -23,20 +23,31 @@ void mEnque(queueNode_t* input)
 	}
 }
 
-queueNode_t* mDeque(int failMeNot)
+queueNode_t* mDeque()
 {
 	stepCounter = (++stepCounter)%4;
 	if(stepCounter == 0 || stepCounter == 1)
-	{		
-		return deque(&P1q);
+	{	
+		if(getSize(&P1q) != 0)
+		{
+			return deque(&P1q);	
+		}	
+		else
+		{
+			return deque(&P2q);
+		}
 		
 	}
-	else if(stepCounter == 2 || failMeNot >= 1)
+	else if(stepCounter == 2)
 	{
 		if(getSize(&P2q) != 0)
+		{
 			return deque(&P2q);
+		}
 		else
+		{
 			return deque(&P1q);
+		}
 	}
 	else
 	{

@@ -15,18 +15,9 @@
 #include "queue.h"
 #include "context.h"
 
-
-
-//Functions 
-
-
-queue_t Wq; //wait queue
-
 boolean initialized = false;
 boolean pauseAlarms = false;
 queueNode_t* currentlyExecuting = NULL;
-boolean abnormalEnding = false;
-boolean yielded = false;
 
 void timeSliceExpired ()
 {
@@ -41,62 +32,34 @@ void timeSliceExpired ()
 	// Ugly hack to ensure we don't get interupted while switching contexts.
 	if(pauseAlarms) return;
 	// Pick the next node to execute
-	queueNode_t* nextNodeToExecute;
-	if(!yielded)
-		nextNodeToExecute = mDeque(0);
-	else
-		nextNodeToExecute = mDeque(1);	
+	queueNode_t* nextNodeToExecute = mDeque();
 	// check if the queue was empty.
 	if(nextNodeToExecute == NULL)
  	{
  		return;
  	}
  	// Prepare to swap out the current context unless, you are instructed otherwise.
- 	ucontext_t * currentContext;	 	
- 	if(currentlyExecuting != NULL)
- 	{	
- 		my_pthread_t* thread = getThread(currentlyExecuting);
-		currentContext = thread->context;
-		if(!abnormalEnding)
-		{
-			decrementPriority(thread);
-		}
-		
-	}
-	else
+ 	boolean newlyCreated = false; 	
+ 	if(currentlyExecuting == NULL)
 	{
-		currentContext = makeEmptyContext();
 		my_pthread_t* currentThread = (my_pthread_t *)malloc(sizeof(my_pthread_t));
-		populateThread(currentThread, currentContext);
-		currentlyExecuting = createNode(currentThread);		
-		//getcontext(currentContext);
+		populateThread(currentThread, makeEmptyContext());
+		currentlyExecuting = createNode(currentThread);
+		newlyCreated = true;
+	}
+	my_pthread_t* currentThread = getThread(currentlyExecuting);
+	if(!newlyCreated)
+	{
+		decrementPriority(currentThread);
 	}
 	mEnque(currentlyExecuting);
 	currentlyExecuting = nextNodeToExecute;	
-	my_pthread_t* thread = getThread(nextNodeToExecute);
+	my_pthread_t* nextThread = getThread(nextNodeToExecute);
 	
-	setStatus(thread, RUNNING);
+	setStatus(nextThread, RUNNING);
+	setStatus(currentThread, READY);
 	// Do the swaping.
-	abnormalEnding = false;
-	yielded = false;
-	swapcontext(currentContext, thread->context);
-}
-
-void loadNewThread()
-{
-
-	queueNode_t* nextNodeToExecute = mDeque(1);
-	// check if the queue was empty.
-	if(nextNodeToExecute == NULL)
- 	{
- 		return;
- 	}
- 	// Make an empty context.
- 	ucontext_t * currentContext = makeEmptyContext();
- 	currentlyExecuting = nextNodeToExecute;
-	my_pthread_t* thread = getThread(currentlyExecuting);
-	// Do the swaping.
-	swapcontext(currentContext, thread->context);
+	swapcontext(currentThread->context, nextThread->context);
 }
 
 void mySchedulerInit()
@@ -122,32 +85,49 @@ void scheduleForExecution(my_pthread_t* thread)
 	mEnque(qn);
 }
 
+void loadNewThread(int resheduleFlag)
+{
+		
+	queueNode_t* nextNodeToExecute = mDeque();
+	
+	// check if the queue was empty.
+	if(nextNodeToExecute == NULL)
+ 	{
+ 		// Could be that we are at the 4th time slice and the multiLevelQueue wants us to continue executing what
+ 		// we got. The only way to be sure is to Deque again and see.
+ 		
+ 		nextNodeToExecute = mDeque();
+ 		if(nextNodeToExecute == NULL)
+ 		{
+ 			// Can't imagine a situation where we could reach this point. But hell, if we do! It's worth
+ 			// checking out with a debugger to see what the hell is happening.
+ 			// Probably some really wierd race condition that we didn't account for.
+ 			printf("What in the name of everything good is happening??\n");
+ 			return;
+ 		}
+ 	}
+ 	my_pthread_t* currentThread = getThread(currentlyExecuting);
+ 	if(resheduleFlag)
+ 	{
+ 		setStatus(currentThread, WAITING);
+ 		mEnque(currentlyExecuting);
+ 	}
+ 	else
+ 	{
+ 		//printf("%d x\n", currentThread->st);
+ 		setStatus(currentThread, FINISHED);	
+ 	}
+ 	my_pthread_t* nextThread = getThread(nextNodeToExecute);
+ 	currentlyExecuting = nextNodeToExecute;		
+ 	swapcontext(currentThread->context, nextThread->context);
+}
+
 void abruptEnding(void* output)
 {
-	// Set the currently Executing to null so that it doesn't get rescheduled ever.
-	// loadNewThread from the queue and start executing it.
-	
-// Zhilmil added status change
-	//printf("OLO%d %d\n", ((my_pthread_t*)currentlyExecuting->thread)->tid, ((my_pthread_t*)currentlyExecuting->thread)->last_start_time);
-	if(output != NULL)
-		getThread(currentlyExecuting)->retval = output;
-	//(my_pthread_t*)currentlyExecuting->thread)->st = FINISHED;
-	currentlyExecuting = NULL;
-	pauseAlarms = false;
-
-	// End the current time slice.
-	loadNewThread();
+	loadNewThread(0);
 }
 
 void yield()
 {
-	// End the current time slice, so our thread gets swapped out.
-	/*if(currentlyExecuting != NULL)
-		setStatus(getThread(currentlyExecuting), WAITING);*/
-	abnormalEnding = true;
-	yielded = true;
-	timeSliceExpired();
+	loadNewThread(1);
 }
-
-
-

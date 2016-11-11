@@ -31,16 +31,17 @@ int my_pthread_exit(void *value_ptr)
 int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 {
 
-	printf("the join has started");
+	printf("the join has started%d", thread.st);
 	//printf("%d\n", getStatus(&thread));
 	//target thread
 	
-	while(exists(thread.tid))
+	while(thread.st != 4)
 	{
 			//printf("calling thread  is waiting for inner to execute%d\n", getStatus(&thread));
 	//	statusChange(WAITING);
 
-		yield();
+	//	yield();
+		printf("%d\n", thread.st);
 	}
 	//
 	//value_ptr = &(thread.retval);
@@ -50,16 +51,17 @@ int my_pthread_join(my_pthread_t thread, void ** value_ptr)
 
 int my_pthread_mutex_init(my_pthread_mutex_t* mutex,const my_pthread_mutexattr_t* mutex_attr)
 {
-	mutex = malloc(sizeof(my_pthread_mutex_t));
-	mutex->mutex = 1; //initialized
+	mutex = (my_pthread_mutex_t*)malloc(sizeof(my_pthread_mutex_t));
+	mutex->mutex = 0; //initialized
 	mutex->mutexattr_t = mutex_attr; //making mutex attributes to be the attributes passed
 	return 1;
 }
 
 int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 {
-	int mutexLocked = -1;	
-	while(mutexLocked==-1)
+
+	int mutexLocked = 1;	
+	while(mutexLocked == 1)
 	{
 		mutexLocked = __sync_lock_test_and_set(&(mutex->mutex),1);
 		if(mutexLocked == -1)
@@ -67,7 +69,7 @@ int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 			//mutex is not initialized
 			return -1;
 		}
-		 if(mutexLocked==1)
+		 if(mutexLocked==0)
 		{
 			break; //mutex received	
 		}
@@ -79,7 +81,7 @@ int my_pthread_mutex_lock(my_pthread_mutex_t* mutex)
 
 int my_pthread_mutex_unlock(my_pthread_mutex_t * mutex)
 {
-	__sync_lock_test_and_set(&(mutex->mutex),1);
+	__sync_lock_test_and_set(&(mutex->mutex),0);
 }
 
 int my_pthread_mutex_destroy(my_pthread_mutex_t * mutex)
@@ -95,3 +97,4 @@ int my_pthread_mutex_destroy(my_pthread_mutex_t * mutex)
 		free(&mutex);
 	}
 }
+
